@@ -1,0 +1,24 @@
+{
+  "name": "reduce-css",
+  "version": "0.0.1",
+  "description": "Pack CSS into multiple bundles based on postcss",
+  "main": "index.js",
+  "scripts": {
+    "test": "eslint . && tap test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zoubin/reduce-css.git"
+  },
+  "keywords": [
+    "postcss",
+    "reduce",
+    "reduce-css"
+  ],
+  "author": "zoubin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zoubin/reduce-css/issues"
+  },
+  "homepage": "https://github.com/zoubin/reduce-css#readme"
+}

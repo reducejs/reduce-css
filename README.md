@@ -1,2 +1,3 @@
 # reduce-css
-Pack CSS into multiple bundles based on postcss
+Pack CSS into multiple bundles based on postcss.
+
