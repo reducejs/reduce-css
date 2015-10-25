@@ -1,0 +1,17 @@
+html,body {
+  margin: 0;
+  padding: 0;
+}
+
+a{
+  color: #FF0000;
+}
+
+.button {
+  background-color: #0000FF;
+  background-image: url(images/button.png);
+}
+.button {
+  background-color: #00FF00;
+}
+

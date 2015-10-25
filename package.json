@@ -2,9 +2,9 @@
   "name": "reduce-css",
   "version": "0.0.1",
   "description": "Pack CSS into multiple bundles based on postcss",
-  "main": "index.js",
+  "main": "index",
   "scripts": {
-    "test": "eslint . && tap test/*.js"
+    "test": "gulp"
   },
   "repository": {
     "type": "git",
@@ -12,6 +12,8 @@
   },
   "keywords": [
     "postcss",
+    "browserify",
+    "css",
     "reduce",
     "reduce-css"
   ],
@@ -20,5 +22,39 @@
   "bugs": {
     "url": "https://github.com/zoubin/reduce-css/issues"
   },
-  "homepage": "https://github.com/zoubin/reduce-css#readme"
+  "homepage": "https://github.com/zoubin/reduce-css#readme",
+  "dependencies": {
+    "callback-sequence": "^1.2.1",
+    "depsify": "^1.0.0",
+    "factor-vinylify": "^2.0.1",
+    "globby": "^3.0.1",
+    "lazypipe": "^1.0.1",
+    "postcss": "^5.0.5",
+    "postcss-custom-url": "^2.0.0",
+    "run-callback": "^2.1.0",
+    "stream-combiner2": "^1.1.1",
+    "through2": "^2.0.0",
+    "util-mix": "^3.0.1",
+    "vinyl": "^1.1.0",
+    "vinyl-fs": "^2.2.1",
+    "watchify": "^3.4.0"
+  },
+  "devDependencies": {
+    "babel-core": "^5.8.25",
+    "coveralls": "^2.11.4",
+    "del": "^2.0.2",
+    "gulp": "^3.9.0",
+    "gulp-babel": "^5.2.1",
+    "gulp-eslint": "^1.0.0",
+    "gulp-istanbul": "^0.10.1",
+    "gulp-json-editor": "^2.2.1",
+    "gulp-tape": "0.0.4",
+    "isparta": "^3.0.4",
+    "mkdirp": "^0.5.1",
+    "postcss-advanced-variables": "^1.2.2",
+    "postcss-import": "^7.1.0",
+    "tap-spec": "^4.1.0",
+    "tape": "^4.2.0",
+    "task-tape": "^1.0.0"
+  }
 }

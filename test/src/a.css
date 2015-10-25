@@ -1,0 +1,6 @@
+@deps "./reset";
+@import "color";
+a{
+  color: $red;
+}
+
