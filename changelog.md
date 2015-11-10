@@ -1,4 +1,12 @@
-<!-- LATEST b0391bf -->
+<!-- LATEST ca589d3 -->
+
+## [v1.0.2](https://github.com/zoubin/reduce-css/commit/ca589d3) (2015-11-10)
+
+* [ 2015-11-10 [d634cf2](https://github.com/zoubin/reduce-css/commit/d634cf2) ] export Reduce
+
+* [ 2015-11-09 [263daf9](https://github.com/zoubin/reduce-css/commit/263daf9) ] travis, node 5 and 4
+
+* [ 2015-11-09 [3ec1a18](https://github.com/zoubin/reduce-css/commit/3ec1a18) ] CHANGELOG
 
 ## [v1.0.1](https://github.com/zoubin/reduce-css/commit/b0391bf) (2015-11-09)
 
