@@ -1,4 +1,13 @@
-<!-- LATEST ca589d3 -->
+<!-- LATEST 61736c4 -->
+
+## [v1.0.3](https://github.com/zoubin/reduce-css/commit/61736c4) (2015-11-11)
+
+* [ 2015-11-11 [0067f5f](https://github.com/zoubin/reduce-css/commit/0067f5f) ] Allow `urlOpts` passed to dest to specify all options.
+    
+    * `inline` and `copy` do not have option name collisions
+    * update postcss-custom-url to 3.1.0 to use `name` option
+
+* [ 2015-11-10 [5af0e6b](https://github.com/zoubin/reduce-css/commit/5af0e6b) ] CHANGELOG
 
 ## [v1.0.2](https://github.com/zoubin/reduce-css/commit/ca589d3) (2015-11-10)
 
