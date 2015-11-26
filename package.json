@@ -37,7 +37,7 @@
     "util-mix": "^3.0.1",
     "vinyl": "^1.1.0",
     "vinyl-fs": "^2.2.1",
-    "watchify": "^3.4.0"
+    "watchify": "^3.6.0"
   },
   "devDependencies": {
     "babel-core": "^5.8.25",
@@ -53,6 +53,7 @@
     "mkdirp": "^0.5.1",
     "postcss-advanced-variables": "^1.2.2",
     "postcss-import": "^7.1.0",
+    "reduce-css-postcss": "^1.0.5",
     "tap-spec": "^4.1.0",
     "tape": "^4.2.0",
     "task-tape": "^1.0.0"
