@@ -1,9 +1,9 @@
-import reduce from '..'
-import test from 'tape'
-import mkdirp from 'mkdirp'
-import path from 'path'
-import fs from 'fs'
-import os from 'os'
+var test = require('tape')
+var reduce = require('..')
+var path = require('path')
+var mkdirp = require('mkdirp')
+var fs = require('fs')
+var os = require('os')
 
 var tmpdir = path.join(
   (os.tmpdir || os.tmpDir)(), 'reduce-' + Math.random()
@@ -22,9 +22,9 @@ mkdirp.sync(dest())
 
 var write = function (file, n) {
   n = n || ''
-  let base = path.basename(file, '.css')
+  var base = path.basename(file, '.css')
   pool[base] = n
-  let contents = base + n + '{}'
+  var contents = base + n + '{}'
   if (base !== 'c') {
     contents = '@deps "./c";' + contents
   }

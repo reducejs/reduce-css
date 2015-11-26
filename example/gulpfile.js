@@ -1,9 +1,9 @@
-import gulp from 'gulp'
-import path from 'path'
-import postcss from 'postcss'
-import del from 'del'
-import reduce from '../lib/main'
-import reducePostcss from 'reduce-css-postcss'
+var gulp = require('gulp')
+var path = require('path')
+var postcss = require('postcss')
+var del = require('del')
+var reduce = require('..')
+var reducePostcss = require('reduce-css-postcss')
 
 var fixtures = path.resolve.bind(path, __dirname)
 

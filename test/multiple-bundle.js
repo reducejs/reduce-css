@@ -1,9 +1,9 @@
-import test from 'tape'
-import reduce from '../lib/main'
-import path from 'path'
-import del from 'del'
-import postcss from 'postcss'
-import compare from './util/compare-directory'
+var test = require('tape')
+var reduce = require('..')
+var path = require('path')
+var del = require('del')
+var postcss = require('postcss')
+var compare = require('compare-directory')
 
 var fixtures = path.resolve.bind(path, __dirname)
 var dest = fixtures.bind(null, 'build', 'multiple-bundles')
@@ -43,7 +43,7 @@ test('multiple bundles', function(t, cb) {
     },
 
     function () {
-      compare(dest(), expect(), t)
+      compare(t, ['**/*.css', '**/*.png'], dest(), expect())
     },
   ], cb)
 })
