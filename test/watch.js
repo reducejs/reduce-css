@@ -1,4 +1,4 @@
-var test = require('tape')
+var test = require('tap').test
 var reduce = require('..')
 var path = require('path')
 var mkdirp = require('mkdirp')
@@ -42,9 +42,7 @@ function readDest(file) {
 write(src('c.css'))
 
 var entries = [src('a.css'), src('b.css')]
-entries.forEach(function (file) {
-  write(file)
-})
+entries.forEach(write)
 
 test('watch', function(t) {
   var changeNum = 3
@@ -55,7 +53,7 @@ test('watch', function(t) {
   }
   reduce.watch()
     .on('error', console.log.bind(console))
-    .on('change', next)
+    .on('done', next)
     .src(['a.css', 'b.css'], { basedir: src(), factor: factorOpts })
     .pipe(reduce.dest, dest())
 
@@ -75,22 +73,17 @@ test('watch', function(t) {
       getExpectedContents('c'),
       [changeNum, 'c', pool.c].join(':')
     )
-    change(this)
+    setTimeout(change.bind(this), 50)
   }
 
-  function change(w) {
+  function change() {
     if (!changeNum--) {
-      setTimeout(function() {
-        w.close()
-      }, 10)
-      return
+      return this.close()
     }
-    setTimeout(function() {
-      var file = [src('c.css')].concat(entries)[changeNum % 3]
-      var k = path.basename(file, '.css')
-      var n = Math.floor(Math.random() * 10) + 1 + pool[k]
-      write(file, n)
-    }, 200)
+    var file = [src('c.css')].concat(entries)[changeNum % 3]
+    var k = path.basename(file, '.css')
+    var n = Math.floor(Math.random() * 10) + 1 + pool[k]
+    write(file, n)
   }
 
 })

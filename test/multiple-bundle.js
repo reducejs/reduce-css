@@ -1,50 +1,42 @@
-var test = require('tape')
+var test = require('tap').test
 var reduce = require('..')
 var path = require('path')
 var del = require('del')
-var postcss = require('postcss')
 var compare = require('compare-directory')
 
-var fixtures = path.resolve.bind(path, __dirname)
+var fixtures = path.resolve.bind(path, __dirname, 'fixtures')
 var dest = fixtures.bind(null, 'build', 'multiple-bundles')
 var expect = fixtures.bind(null, 'expected', 'multiple-bundles')
-var processor = postcss([
-  require('postcss-import')(),
-  require('postcss-custom-url'),
-  require('postcss-advanced-variables')(),
-])
 
-test('multiple bundles', function(t, cb) {
-  reduce.run([
+test('multiple bundles', function(t) {
+  return reduce.run([
     function () {
       return del(dest())
     },
 
     function () {
-      return reduce
-        .src('*.css', {
-          basedir: fixtures('src'),
-          processor: function (result) {
-            return processor.process(result.css, { from: result.from, to: result.from })
-            .then(function (res) {
-              result.css = res.css
-            })
-          },
-          factor: {
-            needFactor: true,
-            common: 'common.css',
-          },
-        })
-        .pipe(reduce.dest(dest(), null, {
-          maxSize: 0,
-          useHash: true,
-          assetOutFolder: fixtures('build', 'multiple-bundles', 'images'),
-        }))
+      return reduce.src('*.css', {
+        basedir: fixtures('src'),
+        processor: [
+          require('postcss-import')(),
+          require('postcss-custom-url'),
+          require('postcss-advanced-variables')(),
+        ],
+        factor: {
+          needFactor: true,
+          common: 'common.css',
+        },
+      })
+      .pipe(reduce.dest(dest(), null, {
+        maxSize: 0,
+        useHash: true,
+        assetOutFolder: fixtures('build', 'multiple-bundles', 'images'),
+      }))
     },
 
     function () {
       compare(t, ['**/*.css', '**/*.png'], dest(), expect())
     },
-  ], cb)
+  ])
 })
 
