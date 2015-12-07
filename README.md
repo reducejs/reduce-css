@@ -131,7 +131,7 @@ Options to create the depsify instance.
 Fields not explained in the following sections
 are the same with those in [depsify](https://github.com/zoubin/depsify)
 
-#### basedir
+##### basedir
 
 Type: `String`
 
@@ -139,7 +139,7 @@ Default: `process.cwd()`
 
 Used as the `cwd` field of the options passed to globby.
 
-#### factor
+##### factor
 
 Type: `Object`
 
