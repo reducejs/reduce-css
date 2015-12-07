@@ -1,13 +1,13 @@
 # reduce-css
-Pack CSS into multiple bundles,
-based on [depsify](https://github.com/zoubin/depsify)
-and [factor-vinylify](https://www.npmjs.com/package/factor-vinylify).
-
 [![version](https://img.shields.io/npm/v/reduce-css.svg)](https://www.npmjs.org/package/reduce-css)
 [![status](https://travis-ci.org/zoubin/reduce-css.svg?branch=master)](https://travis-ci.org/zoubin/reduce-css)
 [![coverage](https://img.shields.io/coveralls/zoubin/reduce-css.svg)](https://coveralls.io/github/zoubin/reduce-css)
 [![dependencies](https://david-dm.org/zoubin/reduce-css.svg)](https://david-dm.org/zoubin/reduce-css)
 [![devDependencies](https://david-dm.org/zoubin/reduce-css/dev-status.svg)](https://david-dm.org/zoubin/reduce-css#info=devDependencies)
+
+Pack CSS into multiple bundles,
+based on [depsify](https://github.com/zoubin/depsify)
+and [factor-vinylify](https://www.npmjs.com/package/factor-vinylify).
 
 It generates a [vinyl](https://www.npmjs.com/package/vinyl) stream,
 which can be transformed by [gulp](https://www.npmjs.com/package/gulp) plugins.
