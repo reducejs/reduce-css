@@ -3,8 +3,6 @@ Pack CSS into multiple bundles,
 based on [depsify](https://github.com/zoubin/depsify)
 and [factor-vinylify](https://www.npmjs.com/package/factor-vinylify).
 
-[![npm](https://nodei.co/npm/reduce-css.png?downloads=true)](https://www.npmjs.org/package/reduce-css)
-
 [![version](https://img.shields.io/npm/v/reduce-css.svg)](https://www.npmjs.org/package/reduce-css)
 [![status](https://travis-ci.org/zoubin/reduce-css.svg?branch=master)](https://travis-ci.org/zoubin/reduce-css)
 [![coverage](https://img.shields.io/coveralls/zoubin/reduce-css.svg)](https://coveralls.io/github/zoubin/reduce-css)
@@ -16,72 +14,98 @@ which can be transformed by [gulp](https://www.npmjs.com/package/gulp) plugins.
 
 ## Examples
 
-See the files in the `example` directory.
-
 ```javascript
-import gulp from 'gulp'
-import path from 'path'
-import postcss from 'postcss'
-import del from 'del'
-import reduce from '../lib/main'
-
-var processor = postcss([
-  require('postcss-import')(),
-  require('postcss-custom-url'),
-  require('postcss-advanced-variables')(),
-])
-
+var gulp = require('gulp')
+var del = require('del')
+var reduce = require('..')
+var postcss = require('reduce-css-postcss')
+var path = require('path')
 var fixtures = path.resolve.bind(path, __dirname)
+var build = fixtures('build')
 
 gulp.task('clean', function () {
-  return del(fixtures('build'))
+  return del(build)
 })
 
-gulp.task('multiple-bundles', ['clean'], function () {
+gulp.task('single', ['clean'], function () {
   return reduce
     .on('error', console.log.bind(console))
     .on('log', console.log.bind(console))
+    .on('instance', function (b) {
+      b.plugin(postcss)
+    })
     .src('*.css', {
       basedir: fixtures('src'),
-      processor: function (result) {
-        return processor.process(result.css, { from: result.from, to: result.from })
-        .then(function (res) {
-          result.css = res.css
-        })
-      },
-      factor: {
-        needFactor: true,
-        common: 'common.css',
-      },
+      factor: 'common.css',
     })
-    .pipe(reduce.dest('build', null, {
+    .pipe(reduce.dest(build, null, {
       maxSize: 0,
-      useHash: true,
-      assetOutFolder: fixtures('build', 'images'),
+      assetOutFolder: fixtures(build, 'images'),
     }))
 })
 
-gulp.task('watch-multiple-bundles', ['clean'], function () {
-  return reduce.watch()
+gulp.task('watch-single', ['clean'], function () {
+  reduce.watch()
+    .on('done', function () {
+      console.log('New bundles created!')
+    })
     .on('error', console.log.bind(console))
     .on('log', console.log.bind(console))
+    .on('instance', function (b) {
+      b.plugin(postcss)
+    })
     .src('*.css', {
       basedir: fixtures('src'),
-      processor: function (result) {
-        return processor.process(result.css, { from: result.from, to: result.from })
-        .then(function (res) {
-          result.css = res.css
-        })
-      },
+      factor: 'common.css',
+    })
+    .pipe(reduce.dest, build, null, {
+      maxSize: 0,
+      assetOutFolder: fixtures(build, 'images'),
+    })
+})
+
+gulp.task('multi', ['clean'], function () {
+  return reduce
+    .on('error', console.log.bind(console))
+    .on('log', console.log.bind(console))
+    .on('instance', function (b) {
+      b.plugin(postcss)
+    })
+    .src('*.css', {
+      basedir: fixtures('src'),
       factor: {
         needFactor: true,
         common: 'common.css',
       },
     })
-    .pipe(reduce.dest, 'build', null, {
+    .pipe(reduce.dest(build, null, {
       maxSize: 0,
       useHash: true,
-      assetOutFolder: fixtures('build', 'images'),
+      assetOutFolder: fixtures(build, 'images'),
+    }))
+})
+
+gulp.task('watch-multi', ['clean'], function () {
+  reduce.watch()
+    .on('done', function () {
+      console.log('New bundles created!')
+    })
+    .on('error', console.log.bind(console))
+    .on('log', console.log.bind(console))
+    .on('instance', function (b) {
+      b.plugin(postcss)
+    })
+    .src('*.css', {
+      basedir: fixtures('src'),
+      factor: {
+        needFactor: true,
+        common: 'common.css',
+      },
+    })
+    .pipe(reduce.dest, build, null, {
+      maxSize: 0,
+      useHash: true,
+      assetOutFolder: fixtures(build, 'images'),
     })
 })
 
