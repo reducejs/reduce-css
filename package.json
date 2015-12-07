@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/zoubin/reduce-css#readme",
   "dependencies": {
-    "callback-sequence": "^2.0.0",
+    "callback-sequence": "^3.0.0",
     "depsify": "^3.0.1",
     "factor-vinylify": "^3.0.0",
     "globby": "^4.0.0",
