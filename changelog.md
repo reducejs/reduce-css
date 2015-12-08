@@ -1,4 +1,12 @@
-<!-- 416c511 1449491296000 -->
+<!-- 6c31768 1449541106000 -->
+
+## [v2.0.1](https://github.com/zoubin/reduce-css/commit/6c31768) (2015-12-08)
+
+* [[`9fcef37`](https://github.com/zoubin/reduce-css/commit/9fcef37)] Update reduce-css-postcss
+
+* [[`0a5965d`](https://github.com/zoubin/reduce-css/commit/0a5965d)] Update readme
+
+* [[`c4e4503`](https://github.com/zoubin/reduce-css/commit/c4e4503)] CHANGELOG
 
 ## [v2.0.0](https://github.com/zoubin/reduce-css/commit/416c511) (2015-12-07)
 
