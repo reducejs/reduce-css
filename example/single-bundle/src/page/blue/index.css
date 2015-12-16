@@ -1,0 +1,6 @@
+@external "reset";
+@import "helper/color";
+a{
+  color: $blue;
+}
+

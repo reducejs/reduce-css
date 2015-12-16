@@ -1,0 +1,6 @@
+@external "component/button";
+@import "helper/color";
+.blue {
+  color: $blue;
+}
+

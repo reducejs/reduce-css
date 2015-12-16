@@ -1,0 +1,7 @@
+@external "reset";
+@external "component/button";
+@import "helper/color";
+.button {
+  background-color: $green;
+}
+
