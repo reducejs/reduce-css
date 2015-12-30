@@ -1,4 +1,20 @@
-<!-- 6c31768 1449541106000 -->
+<!-- 2fe830d 1451447340000 -->
+
+## [v3.0.0](https://github.com/zoubin/reduce-css/commit/2fe830d) (2015-12-30)
+
+* [[`2c7f394`](https://github.com/zoubin/reduce-css/commit/2c7f394)] Remove unused deps
+
+* [[`34647f9`](https://github.com/zoubin/reduce-css/commit/34647f9)] Use common-bundle instead of factor-vinylify
+
+* [[`5bb260f`](https://github.com/zoubin/reduce-css/commit/5bb260f)] Update readme
+
+* [[`558c3d2`](https://github.com/zoubin/reduce-css/commit/558c3d2)] Add more examples
+
+## [v2.0.2](https://github.com/zoubin/reduce-css/commit/644364b) (2015-12-16)
+
+* [[`d99b437`](https://github.com/zoubin/reduce-css/commit/d99b437)] Support non-glob input
+
+* [[`9aa101b`](https://github.com/zoubin/reduce-css/commit/9aa101b)] CHANGELOG
 
 ## [v2.0.1](https://github.com/zoubin/reduce-css/commit/6c31768) (2015-12-08)
 
