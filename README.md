@@ -5,95 +5,34 @@
 [![dependencies](https://david-dm.org/zoubin/reduce-css.svg)](https://david-dm.org/zoubin/reduce-css)
 [![devDependencies](https://david-dm.org/zoubin/reduce-css/dev-status.svg)](https://david-dm.org/zoubin/reduce-css#info=devDependencies)
 
-Pack CSS into multiple bundles,
-based on [depsify](https://github.com/zoubin/depsify)
-and [factor-vinylify](https://www.npmjs.com/package/factor-vinylify).
+Pack CSS into common shared bundles.
 
-It generates a [vinyl](https://www.npmjs.com/package/vinyl) stream,
-which can be transformed by [gulp](https://www.npmjs.com/package/gulp) plugins.
+**Features**:
 
-## Examples
+* Use [`depsify`] to manage css dependencies.
+* Accept patterns for detecting entries.
+* Use [`watchify`] to update bundles whenever file changes. And new entries can be detected (in progress).
+* Use [`common-bundle`] to pack modules by default.
+* Easy to work with [`gulp`].
 
-Check [examples](example/).
+## Example
+Check more [examples](example/).
+
+The following example uses [`reduce-css-postcss`] to preprocess css before packing them into bundles.
 
 ```javascript
-var gulp = require('gulp')
-var del = require('del')
 var reduce = require('reduce-css')
+var gulp = require('gulp')
+var gutil = require('gulp-util')
+var del = require('del')
 var postcss = require('reduce-css-postcss')
 var path = require('path')
 var build = path.join(__dirname, 'build')
 
-var onerror = function (err) {
-  console.log(err.stack)
-}
-
-// Options passed to `custom-resolve` to specify how to resolve css modules.
-// Refer to `https://github.com/zoubin/custom-resolve` for more information.
-var resolveOpts = {
-  // Check `style` field in package.json instead of `main`
-  main: 'style',
-
-  // Look for files with specified extensions.
-  extensions: ['.css'],
-
-  // Resolve symlinks to their real paths.
-  symlink: true,
-
-  // Now, we can `@import "helper/color"` anywhere under the `src` directory.
-  // Otherwise, we have to write relative paths like `@import "../../web_modules/helper/color"`
-  paths: [path.join(__dirname, 'src', 'web_modules')],
-}
-
-// Refer to `https://github.com/zoubin/reduce-css-postcss` for more information.
-var postcssOpts = {
-  processorFilter: function (pipeline) {
-    // Specify options passed to `postcss-simple-import`
-    // Refer to `https://github.com/zoubin/postcss-simple-import` for more information.
-    pipeline.get('postcss-simple-import').push({ resolve: resolveOpts })
-  },
-}
-
-var commonModules = [
-  path.join(__dirname, 'src/node_modules/reset/index.css'),
-]
-
-var bundleOpts = {
-  // Options passed to `factor-vinylify`
-  // Refer to `https://github.com/zoubin/factor-vinylify#options` for more information.
-  // Name of the output file.
-  factor: {
-    // One bundle for each entry detected from `.src()`.
-    needFactor: true,
-
-    // If omitted, no common bundle will be created.
-    common: 'common.css',
-
-    // Specify which css modules should go to the common bundle.
-    // It is **important** to set this option.
-    // `factor-vinylify` will pack any modules that have more than one dependents into the common,
-    // which probably will mess things up.
-    // Still, you have to `add` them into the pipeline, if they are not required already.
-    // It is a little complicated. We should improve this.
-    threshold: commonModules.concat('**/component/**/*.css'),
-  },
-
-  basedir: path.join(__dirname, 'src'),
-
-  // Use `@external "reset";` to specify that `reset` must be loaded before the current css module.
-  // **Note**:
-  // Use `@import "helper/color";` to insert contents into  the current css file.
-  atRuleName: 'external',
-
-  plugin: [
-    // Apply `reduce-css-postcss`
-    // The second element is the options passed to `reduce-css-postcss`
-    [postcss, postcssOpts],
-  ],
-
-  // Specify how to resolve files.
-  resolve: resolveOpts,
-
+var urlOpts = {
+  maxSize: 0,
+  name: '[name].[hash]',
+  assetOutFolder: path.join(build, 'images'),
 }
 
 gulp.task('clean', function () {
@@ -101,149 +40,270 @@ gulp.task('clean', function () {
 })
 
 gulp.task('build', ['clean'], function () {
-  reduce.on('error', onerror)
-  reduce.on('log', console.log.bind(console))
-
-  reduce.once('instance', function (b) {
-    b.add(commonModules)
-  })
-
-  // The first argument is passed to globby.
-  // Refer to `https://github.com/sindresorhus/globby#globbypatterns-options` for more information
-  return reduce.src('page/**/index.css', bundleOpts)
-    // `pipe` into more gulp plugins
-
-    // Use `reduce.dest` instead of `gulp.dest` to write the bundles into disk.
-    // The first two arguments are passed to `gulp.dest`
-    // The third argument specifies how to handle assets.
-    // It is passed to the `inline` and `copy` transform.
-    // Refer to `https://github.com/zoubin/postcss-custom-url#util` for more information.
-    .pipe(reduce.dest(build, null, {
-      // Assets with size less than `maxSize` will be inlined.
-      maxSize: 0,
-
-      // If `true`, all non-inline assets will be renamed with their sha1 when copied.
-      // useHash: true,
-      // Specify how to rename (basename without the extension) assets when copied.
-      name: '[name].[hash]',
-
-      // Where non-inline assets will be copied.
-      assetOutFolder: path.join(build, 'images'),
-    }))
+  return src(reduce)
+    .pipe(reduce.dest(build, null, urlOpts))
 })
 
-// To keep `watch` unfinished, declare `cb` as the first argument of the task callback
 gulp.task('watch', ['clean'], function (cb) {
-  var watcher = reduce.watch()
-  watcher.on('log', console.log.bind(console))
-  watcher.on('error', onerror)
-
-  watcher.once('instance', function (b) {
-    b.add(commonModules)
-  })
-
-  watcher.on('done', function () {
-    console.log('New bundles created!')
-  })
-
-  // The first argument is passed to globby.
-  // Refer to `https://github.com/sindresorhus/globby#globbypatterns-options` for more information
-  watcher.src('page/**/index.css', bundleOpts)
-    // `pipe` into lazy transforms, i.e. functions to create transforms
-    .pipe(reduce.dest, build, null, {
-      maxSize: 0,
-      assetOutFolder: path.join(build, 'images'),
-    })
+  src(reduce.watch())
+    .pipe(reduce.dest, build, null, urlOpts)
 })
+
+function src(r) {
+  var log = gutil.log.bind(gutil)
+  r.on('error', function (err) {
+    log(err.stack)
+  })
+  r.on('log', log)
+
+  var resolveOpts = {
+    main: 'style',
+    extensions: ['.css'],
+    symlink: true,
+    paths: [path.join(__dirname, 'src', 'web_modules')],
+  }
+
+  var postcssOpts = {
+    processorFilter: function (pipeline) {
+      pipeline.get('postcss-simple-import').push({ resolve: resolveOpts })
+    },
+  }
+
+  r.once('instance', function (b) {
+    b.add(path.join(__dirname, 'src/node_modules/reset/index.css'))
+  })
+
+  return r.src('page/**/index.css', {
+    bundleOptions: {
+      groups: '**/page/**/index.css',
+      common: 'common.css',
+    },
+    basedir: path.join(__dirname, 'src'),
+    atRuleName: 'external',
+    plugin: [
+      [postcss, postcssOpts],
+    ],
+    resolve: resolveOpts,
+  })
+}
 
 ```
+
+**Input**
+
+Directory structure:
+
+```
+example/multiple-bundles/src/
+├── node_modules
+│   └── reset
+│       └── index.css
+├── page
+│   ├── blue
+│   │   └── index.css
+│   └── red
+│       └── index.css
+└── web_modules
+    ├── component
+    │   └── button
+    │       ├── button.png
+    │       └── index.css
+    └── helper
+        └── color
+            └── index.css
+
+```
+
+page/blue/index.css:
+
+```css
+@external "component/button";
+@import "helper/color";
+.blue {
+  color: $blue;
+}
+
+```
+
+page/red/index.css:
+```css
+@external "component/button";
+@import "helper/color";
+.red {
+  color: $red;
+}
+
+/* overwrite the default button style */
+.button {
+  background-color: $green;
+}
+
+```
+
+web_modules/component/button/index.css:
+```css
+@import "helper/color";
+.button {
+  background-color: $green;
+  background-image: url(button.png);
+}
+
+```
+
+helper/color/index.css:
+```css
+$red: #FF0000;
+$green: #00FF00;
+$blue: #0000FF;
+
+```
+
+node_modules/reset/index.css:
+```css
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+```
+
+**Output**
+
+* Two page-specific bundles are created.
+* An addtional bundle (`common.css`) is also created to hold modules shared by all pages.
+* Assets are moved to the specified location, when urls in css are transformed.
+
+Directory structure:
+```
+example/multiple-bundles/build/
+├── common.css
+├── images
+│   └── button.161fff2.png
+└── page
+    ├── blue
+    │   └── index.css
+    └── red
+        └── index.css
+
+```
+
+page/blue/index.css:
+```css
+.blue {
+  color: #0000FF;
+}
+
+```
+
+page/red/index.css:
+```css
+.red {
+  color: #FF0000;
+}
+
+/* overwrite the default button style */
+.button {
+  background-color: #00FF00;
+}
+
+```
+
+common.css:
+```css
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+.button {
+  background-color: #00FF00;
+  background-image: url(images/button.161fff2.png);
+}
+
+```
+
 
 ## API
 
 ### reduce.src(patterns, bopts)
+Create a stream flowing [`vinyl`] file objects,
+which represents bundles created.
 
-Creates a vinyl file stream to flow all the bundle file objects,
-which can be transformed by gulp plugins.
-
-#### patterns
+**patterns**
 
 Type: `String`, `Array`
 
-Used by [globby](https://github.com/sindresorhus/globby) to locate entries.
+Used by [`globby`] to locate entries.
 
-#### bopts
+**bopts**
 
-Options to create the depsify instance.
+Options to create the [`depsify`] instance.
 
 Fields not explained in the following sections
-are the same with those in [depsify](https://github.com/zoubin/depsify)
+are the same with those in [`depsify`].
 
-##### basedir
+**bopts.basedir**
 
 Type: `String`
 
 Default: `process.cwd()`
 
-Used as the `cwd` field of the options passed to globby.
+Used as the `cwd` field of the options passed to [`globby`].
 
-##### factor
+**bopts.bundleOptions**
 
 Type: `Object`
 
-Options passed to [factor-vinylify](https://github.com/zoubin/factor-vinylify#options).
+Options passed to [`common-bundle`].
 
 ### r = reduce.Reduce()
 Create a new reduce instance.
 
 ### w = reduce.watch(watchifyOpts)
-
 Creates a watch instance.
 
-`watchifyOpts` will be passed to [watchify](https://github.com/substack/watchify).
+`watchifyOpts` will be passed to [`watchify`].
 
-#### w.src(pattern, opts)
-
+`w.src(pattern, opts)`:
 The same with `reduce.src`.
 
-#### w.pipe(fn, arg1, arg2,...)
-
-Like [lazypipe](https://github.com/OverZealous/lazypipe).
-Just pass the stream constructor and its arguments to `.pipe`,
+`w.pipe(fn, arg1, arg2,...)`: Like [`lazypipe`].
+Pass the stream constructor and its arguments to `.pipe`,
 and they will be called to create a pipeline
 for transforming the output stream.
 
-
 ### reduce.dest(outFolder, opts, urlOpts)
-
-The first two arguments are passed to [vfs.dest](https://github.com/gulpjs/vinyl-fs#destfolder-opt)
+The first two arguments are passed to [`gulp.dest`].
 
 `urlOpts`:
 
-Three fields to control the url transformation
+Specify how to make url transformations.
 
-* `maxSize`: see [postcss-custom-url](https://github.com/zoubin/postcss-custom-url#maxsize)
-* `useHash`, `assetOutFolder`: see [postcss-custom-url](https://github.com/zoubin/postcss-custom-url#copy)
-
+* `maxSize`: [`postcss-custom-url#inline`].
+* `useHash`, `assetOutFolder`: [`postcss-custom-url#copy`]
 
 ## reduce.lazypipe
-
-The same with [lazypipe](https://github.com/OverZealous/lazypipe)
+The same with [`lazypipe`].
 
 ## reduce.run
-
-The same with [callback-sequence#run](https://github.com/zoubin/callback-sequence#sequenceruncallbacks-done)
-
-## Watch
-
-`reduce.src` generates a vinyl stream,
-which could be transformed by gulp-plugins.
-
-However, `reduce.watch().src` generates a [lazypipe](https://github.com/OverZealous/lazypipe) instance,
-and will bundle in the next tick.
-
-See the [example](#example)
+The same with [`callback-sequence#run`].
 
 ## Related
 
-* [reduce-js](https://github.com/zoubin/reduce-js)
+* [`reduce-js`]
+* [`reduce-css-postcss`]
+* [`depsify`]
 
+[`reduce-js`]: https://github.com/zoubin/reduce-js
+[`reduce-css-postcss`]: https://github.com/zoubin/reduce-css-postcss
+[`depsify`]: https://github.com/zoubin/depsify
+[`common-bundle`]: https://www.npmjs.com/package/common-bundle
+[`vinyl`]: https://www.npmjs.com/package/vinyl
+[`gulp`]: https://www.npmjs.com/package/gulp
+[`globby`]: https://github.com/sindresorhus/globby
+[`watchify`]: https://github.com/substack/watchify
+[`lazypipe`]: https://github.com/OverZealous/lazypipe
+[`gulp.dest`]: https://github.com/gulpjs/gulp/blob/master/docs/API.md#gulpdestpath-options
+[`callback-sequence#run`]: https://github.com/zoubin/callback-sequence#sequenceruncallbacks-done
+[`postcss-custom-url#inline`]: https://github.com/zoubin/postcss-custom-url#inline
+[`postcss-custom-url#copy`]: https://github.com/zoubin/postcss-custom-url#copy

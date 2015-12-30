@@ -22,7 +22,7 @@ test('single bundle', function(t) {
           require('postcss-custom-url'),
           require('postcss-advanced-variables')(),
         ],
-        factor: 'common.css',
+        bundleOptions: 'common.css',
       })
       .pipe(reduce.dest(dest(), null, {
         maxSize: 0,

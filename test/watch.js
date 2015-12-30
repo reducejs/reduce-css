@@ -47,14 +47,17 @@ entries.forEach(write)
 test('watch', function(t) {
   var changeNum = 3
   t.plan((changeNum + 1) * 3)
-  var factorOpts = {
+  var bundleOptions = {
     common: 'c.css',
-    needFactor: true,
+    groups: '**/+(a|b).css',
   }
   reduce.watch()
     .on('error', console.log.bind(console))
     .on('done', next)
-    .src(['a.css', 'b.css'], { basedir: src(), factor: factorOpts })
+    .src(['a.css', 'b.css'], {
+      basedir: src(),
+      bundleOptions: bundleOptions,
+    })
     .pipe(reduce.dest, dest())
 
   function next() {

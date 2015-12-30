@@ -22,8 +22,8 @@ test('multiple bundles', function(t) {
           require('postcss-custom-url'),
           require('postcss-advanced-variables')(),
         ],
-        factor: {
-          needFactor: true,
+        bundleOptions: {
+          groups: '**/+(a|b).css',
           common: 'common.css',
         },
       })

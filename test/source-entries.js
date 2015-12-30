@@ -26,7 +26,7 @@ test('source entries', function(t) {
           '/c': 'c{}',
           '/d': 'd{}',
         },
-        factor: 'common.css',
+        bundleOptions: 'common.css',
         resolve: function (file, parent) {
           return path.resolve(parent.basedir, file)
         },
