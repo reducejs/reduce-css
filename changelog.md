@@ -1,4 +1,12 @@
-<!-- 2fe830d 1451447340000 -->
+<!-- 3778dd7 1451549538000 -->
+
+## [v3.0.1](https://github.com/zoubin/reduce-css/commit/3778dd7) (2015-12-31)
+
+* [[`01871e9`](https://github.com/zoubin/reduce-css/commit/01871e9)] Allow null entries
+
+* [[`8e38681`](https://github.com/zoubin/reduce-css/commit/8e38681)] Update tap
+
+* [[`1b23eef`](https://github.com/zoubin/reduce-css/commit/1b23eef)] CHANGELOG
 
 ## [v3.0.0](https://github.com/zoubin/reduce-css/commit/2fe830d) (2015-12-30)
 
