@@ -52,7 +52,7 @@
     "gulp-util": "^3.0.7",
     "mkdirp": "^0.5.1",
     "postcss-advanced-variables": "^1.2.2",
-    "postcss-import": "^7.1.0",
+    "postcss-import": "^8.0.0",
     "reduce-css-postcss": "^2.0.0",
     "tap": "^5.0.0"
   }
