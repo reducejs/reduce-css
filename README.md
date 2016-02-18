@@ -1,9 +1,10 @@
 # reduce-css
 [![version](https://img.shields.io/npm/v/reduce-css.svg)](https://www.npmjs.org/package/reduce-css)
-[![status](https://travis-ci.org/zoubin/reduce-css.svg?branch=master)](https://travis-ci.org/zoubin/reduce-css)
-[![coverage](https://img.shields.io/coveralls/zoubin/reduce-css.svg)](https://coveralls.io/github/zoubin/reduce-css)
-[![dependencies](https://david-dm.org/zoubin/reduce-css.svg)](https://david-dm.org/zoubin/reduce-css)
-[![devDependencies](https://david-dm.org/zoubin/reduce-css/dev-status.svg)](https://david-dm.org/zoubin/reduce-css#info=devDependencies)
+[![status](https://travis-ci.org/reducejs/reduce-css.svg?branch=master)](https://travis-ci.org/reducejs/reduce-css)
+[![coverage](https://img.shields.io/coveralls/reducejs/reduce-css.svg)](https://coveralls.io/github/reducejs/reduce-css)
+[![dependencies](https://david-dm.org/reducejs/reduce-css.svg)](https://david-dm.org/reducejs/reduce-css)
+[![devDependencies](https://david-dm.org/reducejs/reduce-css/dev-status.svg)](https://david-dm.org/reducejs/reduce-css#info=devDependencies)
+![node](https://img.shields.io/node/v/reduce-css.svg)
 
 Pack CSS into common shared bundles.
 
@@ -11,7 +12,7 @@ Pack CSS into common shared bundles.
 
 * Use [`depsify`] to manage css dependencies.
 * Accept patterns for detecting entries.
-* Use [`watchify`] to update bundles whenever file changes. And new entries can be detected (in progress).
+* Use [`watchify2`] to update bundles whenever file changes. And new entries can be detected.
 * Use [`common-bundle`] to pack modules by default.
 * Easy to work with [`gulp`].
 
@@ -294,16 +295,17 @@ The same with [`callback-sequence#run`].
 * [`reduce-css-postcss`]
 * [`depsify`]
 
-[`reduce-js`]: https://github.com/zoubin/reduce-js
-[`reduce-css-postcss`]: https://github.com/zoubin/reduce-css-postcss
-[`depsify`]: https://github.com/zoubin/depsify
+[`reduce-js`]: https://github.com/reducejs/reduce-js
+[`reduce-css-postcss`]: https://github.com/reducejs/reduce-css-postcss
+[`depsify`]: https://github.com/reducejs/depsify
 [`common-bundle`]: https://www.npmjs.com/package/common-bundle
 [`vinyl`]: https://www.npmjs.com/package/vinyl
 [`gulp`]: https://www.npmjs.com/package/gulp
 [`globby`]: https://github.com/sindresorhus/globby
 [`watchify`]: https://github.com/substack/watchify
+[`watchify2`]: https://github.com/reducejs/watchify2
 [`lazypipe`]: https://github.com/OverZealous/lazypipe
 [`gulp.dest`]: https://github.com/gulpjs/gulp/blob/master/docs/API.md#gulpdestpath-options
 [`callback-sequence#run`]: https://github.com/zoubin/callback-sequence#sequenceruncallbacks-done
-[`postcss-custom-url#inline`]: https://github.com/zoubin/postcss-custom-url#inline
-[`postcss-custom-url#copy`]: https://github.com/zoubin/postcss-custom-url#copy
+[`postcss-custom-url#inline`]: https://github.com/reducejs/postcss-custom-url#inline
+[`postcss-custom-url#copy`]: https://github.com/reducejs/postcss-custom-url#copy

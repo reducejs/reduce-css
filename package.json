@@ -4,13 +4,13 @@
   "description": "Pack CSS into multiple bundles based on postcss",
   "main": "index.js",
   "scripts": {
-    "test": "npm run lint && tap --cov test/*.js",
+    "test": "npm run lint && tap test/*.js",
     "lint": "eslint *.js 'lib/**/*.js' test/*.js bin/*.js",
-    "coveralls": "COVERALLS_REPO_TOKEN=SdSbiOfTNcepKHCJSyuCF5yHfBGHpFX39 npm test"
+    "coveralls": "COVERALLS_REPO_TOKEN=SdSbiOfTNcepKHCJSyuCF5yHfBGHpFX39 tap --cov test/*.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zoubin/reduce-css.git"
+    "url": "git+https://github.com/reducejs/reduce-css.git"
   },
   "keywords": [
     "postcss",
@@ -21,36 +21,39 @@
   ],
   "author": "zoubin",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/zoubin/reduce-css/issues"
+  "engines": {
+    "node": ">=4.2.1"
   },
-  "homepage": "https://github.com/zoubin/reduce-css#readme",
+  "bugs": {
+    "url": "https://github.com/reducejs/reduce-css/issues"
+  },
+  "homepage": "https://github.com/reducejs/reduce-css#readme",
   "dependencies": {
     "callback-sequence": "^3.0.0",
-    "common-bundle": "^0.1.2",
+    "common-bundle": "^0.2.0",
     "depsify": "^3.0.1",
     "globby": "^4.0.0",
     "lazypipe": "^1.0.1",
     "mixy": "^1.0.0",
     "postcss": "^5.0.5",
-    "postcss-custom-url": "^3.1.1",
+    "postcss-custom-url": "^4.0.0",
     "stream-combiner2": "^1.1.1",
     "through2": "^2.0.0",
     "vinyl": "^1.1.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-fs": "^2.2.1",
-    "watchify": "^3.6.0"
+    "watchify2": "^0.1.0"
   },
   "devDependencies": {
     "compare-directory": "^1.0.1",
     "del": "^2.0.2",
-    "eslint": "^1.10.1",
+    "eslint": "^2.1.0",
     "gulp": "^3.9.0",
     "gulp-util": "^3.0.7",
     "mkdirp": "^0.5.1",
     "postcss-advanced-variables": "^1.2.2",
     "postcss-import": "^7.1.0",
     "reduce-css-postcss": "^2.0.0",
-    "tap": "^4.0.0"
+    "tap": "^5.0.0"
   }
 }
