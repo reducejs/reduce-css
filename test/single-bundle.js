@@ -18,7 +18,7 @@ test('single bundle', function(t) {
       return reduce.src('*.css', {
         basedir: fixtures('src'),
         processor: [
-          require('postcss-import')(),
+          require('postcss-simple-import')(),
           require('postcss-custom-url'),
           require('postcss-advanced-variables')(),
         ],
