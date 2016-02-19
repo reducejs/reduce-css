@@ -52,8 +52,8 @@
     "gulp-util": "^3.0.7",
     "mkdirp": "^0.5.1",
     "postcss-advanced-variables": "^1.2.2",
-    "postcss-simple-import": "^2.2.0",
-    "reduce-css-postcss": "^2.0.0",
+    "postcss-simple-import": "^3.0.0",
+    "reduce-css-postcss": "^3.0.0",
     "tap": "^5.0.0"
   }
 }
