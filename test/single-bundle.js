@@ -1,38 +1,38 @@
-var test = require('tap').test
-var reduce = require('..')
-var path = require('path')
-var del = require('del')
-var compare = require('compare-directory')
+'use strict'
 
-var fixtures = path.resolve.bind(path, __dirname, 'fixtures')
-var dest = fixtures.bind(null, 'build', 'single-bundle')
-var expect = fixtures.bind(null, 'expected', 'single-bundle')
+const test = require('tap').test
+const reduce = require('..')
+const path = require('path')
+const del = require('del')
+const compare = require('compare-directory')
+const depsify = require('depsify')
+
+const fixtures = path.resolve.bind(path, __dirname, 'fixtures')
+const dest = fixtures.bind(null, 'build', 'single-bundle')
+const expect = fixtures.bind(null, 'expected', 'single-bundle')
 
 test('single bundle', function(t) {
-  return reduce.run([
-    function () {
-      return del(dest())
-    },
-
-    function () {
-      return reduce.src('*.css', {
-        basedir: fixtures('src'),
-        processor: [
-          require('postcss-simple-import')(),
-          require('postcss-custom-url'),
-          require('postcss-advanced-variables')(),
-        ],
-        bundleOptions: 'common.css',
-      })
+  let basedir = fixtures('src')
+  let b = depsify({
+    basedir,
+    processor: [
+      require('postcss-simple-import')(),
+      require('postcss-custom-url'),
+      require('postcss-advanced-variables')(),
+    ],
+  })
+  del(dest()).then(function () {
+    reduce.src('*.css', { cwd: basedir })
+      .pipe(reduce.bundle(b, 'common.css'))
       .pipe(reduce.dest(dest(), null, {
         maxSize: 0,
         assetOutFolder: fixtures('build', 'single-bundle', 'images'),
       }))
-    },
-
-    function () {
-      compare(t, ['**/*.css', '**/*.png'], dest(), expect())
-    },
-  ])
+      .on('data', () => {})
+      .on('end', function () {
+        compare(t, ['**/*.css', '**/*.png'], dest(), expect())
+        t.end()
+      })
+  })
 })
 

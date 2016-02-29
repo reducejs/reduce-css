@@ -1,9 +1,12 @@
-var test = require('tap').test
-var reduce = require('..')
-var path = require('path')
-var mkdirp = require('mkdirp')
-var fs = require('fs')
-var os = require('os')
+'use strict'
+
+const test = require('tap').test
+const reduce = require('..')
+const path = require('path')
+const mkdirp = require('mkdirp')
+const fs = require('fs')
+const os = require('os')
+const depsify = require('depsify')
 
 var tmpdir = path.join(
   (os.tmpdir || os.tmpDir)(), 'reduce-' + Math.random()
@@ -12,19 +15,19 @@ mkdirp.sync(tmpdir)
 // /private/var  <--- soft link --- /var
 tmpdir = fs.realpathSync(tmpdir)
 
-var fixtures = path.resolve.bind(path, tmpdir)
-var src = fixtures.bind(null, 'src')
-var dest = fixtures.bind(null, 'build')
-var pool = {}
+const fixtures = path.resolve.bind(path, tmpdir)
+const src = fixtures.bind(null, 'src')
+const dest = fixtures.bind(null, 'build')
+const pool = {}
 
 mkdirp.sync(src())
 mkdirp.sync(dest())
 
-var write = function (file, n) {
+const write = function (file, n) {
   n = n || ''
-  var base = path.basename(file, '.css')
+  let base = path.basename(file, '.css')
   pool[base] = n
-  var contents = base + n + '{}'
+  let contents = base + n + '{}'
   if (base !== 'c') {
     contents = '@deps "./c";' + contents
   }
@@ -41,51 +44,51 @@ function readDest(file) {
 
 write(src('c.css'))
 
-var entries = [src('a.css'), src('b.css')]
+const entries = [src('a.css'), src('b.css')]
 entries.forEach(write)
 
 test('watch', function(t) {
-  var changeNum = 3
-  t.plan((changeNum + 1) * 3)
-  var bundleOptions = {
-    common: 'c.css',
-    groups: '**/+(a|b).css',
-  }
-  reduce.watch()
-    .on('error', console.log.bind(console))
-    .on('done', next)
-    .src(['a.css', 'b.css'], {
-      basedir: src(),
-      bundleOptions: bundleOptions,
-    })
-    .pipe(reduce.dest, dest())
+  let count = 3
+  let b = depsify({ basedir: src() })
+
+  b.on('bundle-stream', function (bundleStream) {
+    bundleStream.pipe(reduce.dest(dest()))
+      .once('finish', () => setTimeout(next, 50))
+  })
+
+  b.once('close', function () {
+    t.equal(count, -1)
+    t.end()
+  })
+
+  reduce.src(['a.css', 'b.css'], { cwd: src() })
+    .pipe(reduce.watch(b, {
+      common: 'c.css',
+      groups: '+(a|b).css',
+    }))
 
   function next() {
     t.equal(
       readDest('a.css'),
       getExpectedContents('a'),
-      [changeNum, 'a', pool.a].join(':')
+      [count, 'a', pool.a].join(':')
     )
     t.equal(
       readDest('b.css'),
       getExpectedContents('b'),
-      [changeNum, 'b', pool.b].join(':')
+      [count, 'b', pool.b].join(':')
     )
     t.equal(
       readDest('c.css'),
       getExpectedContents('c'),
-      [changeNum, 'c', pool.c].join(':')
+      [count, 'c', pool.c].join(':')
     )
-    setTimeout(change.bind(this), 50)
-  }
-
-  function change() {
-    if (!changeNum--) {
-      return this.close()
+    if (!count--) {
+      return b.close()
     }
-    var file = [src('c.css')].concat(entries)[changeNum % 3]
-    var k = path.basename(file, '.css')
-    var n = Math.floor(Math.random() * 10) + 1 + pool[k]
+    let file = [src('c.css')].concat(entries)[count % 3]
+    let k = path.basename(file, '.css')
+    let n = Math.floor(Math.random() * 10) + 1 + pool[k]
     write(file, n)
   }
 
