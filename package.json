@@ -1,6 +1,6 @@
 {
   "name": "reduce-css",
-  "version": "5.0.0",
+  "version": "4.0.0",
   "description": "Pack CSS into multiple bundles based on postcss",
   "main": "index.js",
   "scripts": {
@@ -31,7 +31,6 @@
   "homepage": "https://github.com/reducejs/reduce-css#readme",
   "dependencies": {
     "common-bundle": "^0.3.0",
-    "depsify": "^3.0.1",
     "postcss": "^5.0.5",
     "postcss-custom-url": "^4.0.0",
     "stream-combiner2": "^1.1.1",
@@ -43,6 +42,7 @@
   "devDependencies": {
     "compare-directory": "^1.0.1",
     "del": "^2.0.2",
+    "depsify": "^3.0.1",
     "eslint": "^2.1.0",
     "gulp": "^3.9.0",
     "mkdirp": "^0.5.1",
