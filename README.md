@@ -17,9 +17,6 @@ Pack CSS into common shared bundles.
   which make `b.bundle()` output a stream manipulatable by [`gulp`] plugins.
   It can be replaced with other plugins like [`factor-bundle`].
 
-- [Example](#example)
-- [API](#api)
-
 ## Example
 The following example uses [`reduce-css-postcss`] to preprocess css before packing them into bundles.
 
