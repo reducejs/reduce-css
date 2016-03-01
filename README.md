@@ -10,75 +10,70 @@ Pack CSS into common shared bundles.
 
 **Features**:
 
-* Use [`depsify`] to manage css dependencies.
-* Accept patterns for detecting entries.
-* Use [`watchify2`] to update bundles whenever file changes. And new entries can be detected.
-* Use [`common-bundle`] to pack modules by default.
-* Easy to work with [`gulp`].
+* Use [`depsify`] to pack css files into bundles.
+* Accept patterns to add entries.
+* Use [`watchify2`] to watch files, which is able to detect new entries.
+* Use [`common-bundle`] to pack modules by default,
+  which make `b.bundle()` output a stream manipulatable by [`gulp`] plugins.
+  It can be replaced with other plugins like [`factor-bundle`].
+
+- [Example](#example)
+- [API](#api)
 
 ## Example
-Check more [examples](example/).
-
 The following example uses [`reduce-css-postcss`] to preprocess css before packing them into bundles.
 
 ```javascript
-var reduce = require('reduce-css')
-var gulp = require('gulp')
-var gutil = require('gulp-util')
-var del = require('del')
-var postcss = require('reduce-css-postcss')
-var path = require('path')
-var build = path.join(__dirname, 'build')
-
-var urlOpts = {
-  maxSize: 0,
-  name: '[name].[hash]',
-  assetOutFolder: path.join(build, 'images'),
-}
+const reduce = require('reduce-css')
+const gulp = require('gulp')
+const del = require('del')
+const postcss = require('reduce-css-postcss')
+const path = require('path')
+const build = path.join(__dirname, 'build')
+const depsify = require('depsify')
 
 gulp.task('clean', function () {
   return del(build)
 })
 
 gulp.task('build', ['clean'], function () {
-  return src(reduce)
-    .pipe(reduce.dest(build, null, urlOpts))
+  let b = createBundler()
+  return gulp.src('page/**/index.css', { cwd: b._options.basedir })
+    .pipe(reduce.bundle(b, {
+      groups: 'page/**/index.css',
+      common: 'common.css',
+    }))
+    .pipe(transform())
 })
 
-gulp.task('watch', ['clean'], function (cb) {
-  src(reduce.watch())
-    .pipe(reduce.dest, build, null, urlOpts)
-})
-
-function src(r) {
-  var log = gutil.log.bind(gutil)
-  r.on('error', function (err) {
-    log(err.stack)
+gulp.task('watch', ['clean'], function () {
+  let b = createBundler()
+  b.on('bundle-stream', function (bundleStream) {
+    bundleStream.pipe(transform())
   })
-  r.on('log', log)
+  return gulp.src('page/**/index.css', { cwd: b._options.basedir })
+    .pipe(reduce.watch(b, {
+      groups: 'page/**/index.css',
+      common: 'common.css',
+    }))
+})
 
-  var resolveOpts = {
+function createBundler() {
+  let resolveOpts = {
     main: 'style',
     extensions: ['.css'],
     symlink: true,
     paths: [path.join(__dirname, 'src', 'web_modules')],
   }
-
-  var postcssOpts = {
+  let postcssOpts = {
     processorFilter: function (pipeline) {
-      pipeline.get('postcss-simple-import').push({ resolve: resolveOpts })
+      pipeline.get('postcss-simple-import').push({
+        resolve: resolveOpts,
+      })
     },
   }
-
-  r.once('instance', function (b) {
-    b.add(path.join(__dirname, 'src/node_modules/reset/index.css'))
-  })
-
-  return r.src('page/**/index.css', {
-    bundleOptions: {
-      groups: '**/page/**/index.css',
-      common: 'common.css',
-    },
+  let b = depsify({
+    entries: ['node_modules/reset/index.css'],
     basedir: path.join(__dirname, 'src'),
     atRuleName: 'external',
     plugin: [
@@ -86,7 +81,19 @@ function src(r) {
     ],
     resolve: resolveOpts,
   })
+  b.on('log', err => console.log(err))
+
+  return b
 }
+
+function transform() {
+  return reduce.dest(build, null, {
+    maxSize: 0,
+    name: '[name].[hash]',
+    assetOutFolder: path.join(build, 'images'),
+  })
+}
+
 
 ```
 
@@ -226,68 +233,163 @@ html, body {
 
 ## API
 
-### reduce.src(patterns, bopts)
-Create a stream flowing [`vinyl`] file objects,
-which represents bundles created.
+```javascript
+const reduce = require('reduce-css')
 
-**patterns**
+```
 
-Type: `String`, `Array`
+### reduce.bundle(b, opts)
+Return a transform:
+* input: [`vinyl-fs#src`]
+* output: `b.bundle()`
 
-Used by [`globby`] to locate entries.
+**b**
 
-**bopts**
+[`depsify`] instance.
 
-Options to create the [`depsify`] instance.
+**opts**
 
-Fields not explained in the following sections
-are the same with those in [`depsify`].
+Options passed to `reduce.bundler`.
 
-**bopts.basedir**
 
-Type: `String`
+```javascript
+'use strict'
 
-Default: `process.cwd()`
+const reduce = require('reduce-css')
+const path = require('path')
+const depsify = require('depsify')
+const basedir = '/path/to/src'
+const b = depsify({
+  basedir,
+  processor: [
+    require('postcss-simple-import')(),
+    require('postcss-custom-url'),
+    require('postcss-advanced-variables')(),
+  ],
+})
+reduce.src('page/**/index.css', { cwd: basedir })
+  .pipe(reduce.bundle(b, 'bundle.css'))
+  .pipe(reduce.dest('/path/to/build', null, {
+    maxSize: 0,
+    assetOutFolder: '/path/to/build/images',
+  }))
+  .on('data', () => {})
+  .on('end', function () {
+    console.log('done')
+  })
 
-Used as the `cwd` field of the options passed to [`globby`].
 
-**bopts.bundleOptions**
+```
 
-Type: `Object`
+### reduce.watch(b, opts, watchOpts)
+Return a transform:
+* input: [`vinyl-fs#src`]
+* output: actually no data flows out.
 
-Options passed to [`common-bundle`].
+`b` and `opts` are the same with `reduce.bundle(b, opts)`
 
-### r = reduce.Reduce()
-Create a new reduce instance.
+**watchOpts**
 
-### w = reduce.watch(watchifyOpts)
-Creates a watch instance.
+Options passed to [`watchify2`].
 
-`watchifyOpts` will be passed to [`watchify`].
 
-`w.src(pattern, opts)`:
-The same with `reduce.src`.
+```javascript
+'use strict'
 
-`w.pipe(fn, arg1, arg2,...)`: Like [`lazypipe`].
-Pass the stream constructor and its arguments to `.pipe`,
-and they will be called to create a pipeline
-for transforming the output stream.
+const reduce = require('reduce-css')
+const path = require('path')
+const depsify = require('depsify')
+const basedir = '/path/to/src'
+const b = depsify({
+  basedir,
+  processor: [
+    require('postcss-simple-import')(),
+    require('postcss-custom-url'),
+    require('postcss-advanced-variables')(),
+  ],
+})
+
+b.on('bundle-stream', function (bundleStream) {
+  // `bundleStream` is the result of `b.bundle()`
+  bundleStream.pipe(reduce.dest('/path/to/build', null, {
+    maxSize: 0,
+    assetOutFolder: '/path/to/build/images',
+  }))
+  .on('data', () => {})
+  .on('end', function () {
+    console.log('done')
+  })
+})
+
+reduce.src('page/**/index.css', { cwd: basedir })
+  .pipe(reduce.watch(b, 'bundle.css'))
+
+```
+
+### reduce.src(patterns, opts)
+Same with [`vinyl-fs#src`], except that `opts.read` defaults to `false`.
 
 ### reduce.dest(outFolder, opts, urlOpts)
-The first two arguments are passed to [`gulp.dest`].
+`outFolder` and `opts` are passed to [`vinyl-fs#dest`] directly.
 
-`urlOpts`:
+[`postcss-custom-url`] is used to transform `url()` expressions in css (paths transformed, assets copied or inlined):
+```js
+const url = require('postcss-custom-url')
+const postcss = require('postcss')
+const urlProcessor = postcss(url([
+  [ url.util.inline, urlOpts ],
+  [ url.util.copy, urlOpts ],
+]))
 
-Specify how to make url transformations.
+```
 
-* `maxSize`: [`postcss-custom-url#inline`].
-* `useHash`, `assetOutFolder`: [`postcss-custom-url#copy`]
+### reduce.bundler(b, opts)
+The plugin for packing modules.
 
-## reduce.lazypipe
-The same with [`lazypipe`].
+**opts**
 
-## reduce.run
-The same with [`callback-sequence#run`].
+Default: `{}`
+
+* `Function` or `Array`: `b.plugin(opts)` will be executed. Used to replace the default bundler [`common-bundle`].
+* `String`: all modules are packed into a single bundle, with `opts` the file path.
+* otherwise: `opts` is passed to [`common-bundle`] directly.
+
+```js
+const reduce = require('reduce-css')
+const path = require('path')
+const depsify = require('depsify')
+
+const b = depsify({
+  entries: ['a.css', 'b.css'],
+  basedir: '/path/to/src',
+})
+b.plugin(reduce.bundler, 'bundle.css')
+b.bundle().pipe(reduce.dest('build'))
+
+```
+
+### reduce.watcher(b, opts)
+The plugin for watching file changes, addition and deletion.
+
+`opts` is passed to [`watchify2`] directly.
+
+```js
+const reduce = require('reduce-css')
+const path = require('path')
+const depsify = require('depsify')
+const b = depsify({
+  entries: ['a.css', 'b.css'],
+  basedir: '/path/to/src',
+})
+b.plugin(reduce.bundler, 'bundle.css')
+b.plugin(reduce.watcher, { entryGlob: '*.css' })
+b.on('bundle-stream', function (bundleStream) {
+  // bundleStream is the result of `b.bundle()`
+  bundleStream.pipe(reduce.dest('build'))
+})
+b.start()
+
+```
 
 ## Related
 
@@ -299,13 +401,10 @@ The same with [`callback-sequence#run`].
 [`reduce-css-postcss`]: https://github.com/reducejs/reduce-css-postcss
 [`depsify`]: https://github.com/reducejs/depsify
 [`common-bundle`]: https://www.npmjs.com/package/common-bundle
-[`vinyl`]: https://www.npmjs.com/package/vinyl
 [`gulp`]: https://www.npmjs.com/package/gulp
-[`globby`]: https://github.com/sindresorhus/globby
-[`watchify`]: https://github.com/substack/watchify
 [`watchify2`]: https://github.com/reducejs/watchify2
-[`lazypipe`]: https://github.com/OverZealous/lazypipe
-[`gulp.dest`]: https://github.com/gulpjs/gulp/blob/master/docs/API.md#gulpdestpath-options
-[`callback-sequence#run`]: https://github.com/zoubin/callback-sequence#sequenceruncallbacks-done
-[`postcss-custom-url#inline`]: https://github.com/reducejs/postcss-custom-url#inline
-[`postcss-custom-url#copy`]: https://github.com/reducejs/postcss-custom-url#copy
+[`postcss-custom-url`]: https://github.com/reducejs/postcss-custom-url
+[`common-bundle`]: https://www.npmjs.com/package/common-bundle
+[`vinyl-fs#src`]: https://github.com/gulpjs/vinyl-fs#srcglobs-options
+[`vinyl-fs#dest`]: https://github.com/gulpjs/vinyl-fs#destfolder-options
+[`factor-bundle`]: https://www.npmjs.com/package/factor-bundle

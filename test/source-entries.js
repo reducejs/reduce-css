@@ -1,49 +1,48 @@
-var test = require('tap').test
-var reduce = require('..')
-var path = require('path')
-var fixtures = path.resolve.bind(path, __dirname, 'fixtures')
-var fs = require('fs')
-var del = require('del')
-var DEST = fixtures('build', 'common.css')
+'use strict'
+
+const test = require('tap').test
+const reduce = require('..')
+const path = require('path')
+const fixtures = path.resolve.bind(path, __dirname, 'fixtures')
+const fs = require('fs')
+const del = require('del')
+const DEST = fixtures('build', 'common.css')
+const depsify = require('depsify')
 
 test('source entries', function(t) {
-  return reduce.run([
-    function () {
-      return del(DEST)
+  let b = depsify({
+    entries: [
+      {
+        file: '/a',
+        source: '',
+      },
+      '/b',
+    ],
+    fileCache: {
+      '/b': 'b{}',
+      '/c': 'c{}',
+      '/d': 'd{}',
     },
-
-    function () {
-      return reduce.src({
-        entries: [
-          {
-            file: '/a',
-            source: '',
-          },
-          '/b',
-        ],
-        fileCache: {
-          '/b': 'b{}',
-          '/c': 'c{}',
-          '/d': 'd{}',
-        },
-        bundleOptions: 'common.css',
-        resolve: function (file, parent) {
-          return path.resolve(parent.basedir, file)
-        },
-        dependenciesFilter: function (deps, file) {
-          var base = path.basename(file)
-          return base === 'a' ? ['/c'] : ['/d']
-        },
-      })
+    resolve: function (file, parent) {
+      return path.resolve(parent.basedir, file)
+    },
+    dependenciesFilter: function (deps, file) {
+      var base = path.basename(file)
+      return base === 'a' ? ['/c'] : ['/d']
+    },
+  })
+  del(DEST).then(function () {
+    b.plugin(reduce.bundler, 'common.css')
+    b.bundle()
       .pipe(reduce.dest(fixtures('build')))
-    },
-
-    function () {
-      t.equal(
-        fs.readFileSync(DEST, 'utf8'),
-        'd{}c{}b{}'
-      )
-    },
-  ])
+      .on('data', () => {})
+      .on('end', function () {
+        t.equal(
+          fs.readFileSync(DEST, 'utf8'),
+          'd{}c{}b{}'
+        )
+        t.end()
+      })
+  })
 })
 
