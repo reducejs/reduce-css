@@ -1,4 +1,18 @@
-<!-- f7e7472 1455786697000 -->
+<!-- f45573d 1456800547000 -->
+
+## [v5.0.0](https://github.com/reducejs/reduce-css/commit/f45573d) (2016-03-01)
+
+* [[`d8db18c`](https://github.com/reducejs/reduce-css/commit/d8db18c)] readme
+
+* [[`b869843`](https://github.com/reducejs/reduce-css/commit/b869843)] Refactor: simple api
+
+* [[`0ff8229`](https://github.com/reducejs/reduce-css/commit/0ff8229)] package.json: cov
+
+* [[`e9b2298`](https://github.com/reducejs/reduce-css/commit/e9b2298)] deps: update dev
+
+* [[`fae4be9`](https://github.com/reducejs/reduce-css/commit/fae4be9)] coveralls
+
+* [[`efac983`](https://github.com/reducejs/reduce-css/commit/efac983)] changelog
 
 ## [v4.0.0](https://github.com/reducejs/reduce-css/commit/f7e7472) (2016-02-18)
 
