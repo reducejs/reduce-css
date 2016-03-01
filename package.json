@@ -42,7 +42,7 @@
   "devDependencies": {
     "compare-directory": "^1.0.1",
     "del": "^2.0.2",
-    "depsify": "^3.0.1",
+    "depsify": "^4.0.0",
     "eslint": "^2.1.0",
     "gulp": "^3.9.0",
     "mkdirp": "^0.5.1",
