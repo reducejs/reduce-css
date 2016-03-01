@@ -1,6 +1,12 @@
-<!-- f45573d 1456800547000 -->
+<!-- e0e9697 1456800810000 -->
 
-## [v5.0.0](https://github.com/reducejs/reduce-css/commit/f45573d) (2016-03-01)
+## [v5.0.0](https://github.com/reducejs/reduce-css/commit/e0e9697) (2016-03-01)
+
+* [[`33f2798`](https://github.com/reducejs/reduce-css/commit/33f2798)] Update deps
+
+* [[`a98a418`](https://github.com/reducejs/reduce-css/commit/a98a418)] changelog
+
+* [[`f45573d`](https://github.com/reducejs/reduce-css/commit/f45573d)] 5.0.0
 
 * [[`d8db18c`](https://github.com/reducejs/reduce-css/commit/d8db18c)] readme
 
