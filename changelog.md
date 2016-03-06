@@ -1,4 +1,17 @@
-<!-- e0e9697 1456800810000 -->
+<!-- 3ec332b 1457237612000 -->
+
+## [v5.1.0](https://github.com/reducejs/reduce-css/commit/3ec332b) (2016-03-06)
+
+* [[`72559aa`](https://github.com/reducejs/reduce-css/commit/72559aa)] Refactor.
+
+    
+    * export `depsify` through exports.create
+    * use `postcss` by default
+    * make `readme` more readable
+
+* [[`b5133cb`](https://github.com/reducejs/reduce-css/commit/b5133cb)] Update: depsify
+
+* [[`179b2a3`](https://github.com/reducejs/reduce-css/commit/179b2a3)] changelog
 
 ## [v5.0.0](https://github.com/reducejs/reduce-css/commit/e0e9697) (2016-03-01)
 
