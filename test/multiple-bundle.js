@@ -5,7 +5,6 @@ const reduce = require('..')
 const path = require('path')
 const del = require('del')
 const compare = require('compare-directory')
-const depsify = require('depsify')
 
 const fixtures = path.resolve.bind(path, __dirname, 'fixtures')
 const dest = fixtures.bind(null, 'build', 'multiple-bundles')
@@ -13,14 +12,7 @@ const expect = fixtures.bind(null, 'expected', 'multiple-bundles')
 
 test('multiple bundles', function(t) {
   let basedir = fixtures('src')
-  let b = depsify({
-    basedir,
-    processor: [
-      require('postcss-simple-import')(),
-      require('postcss-custom-url'),
-      require('postcss-advanced-variables')(),
-    ],
-  })
+  let b = reduce.create({ basedir })
   del(dest()).then(function () {
     reduce.src('*.css', { cwd: basedir })
       .pipe(reduce.bundle(b, {

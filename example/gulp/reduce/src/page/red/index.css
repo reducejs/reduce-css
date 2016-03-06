@@ -1,11 +1,11 @@
+@external "reset";
 @external "component/button";
 @import "helper/color";
 .red {
   color: $red;
 }
 
-/* overwrite the default button style */
 .button {
-  background-color: $green;
+  background-color: $red;
 }
 

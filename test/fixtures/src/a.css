@@ -1,4 +1,4 @@
-@deps "./reset";
+@external "./reset";
 @import "color";
 a{
   color: $red;
