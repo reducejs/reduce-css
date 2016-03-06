@@ -136,7 +136,11 @@ const reduce = require('reduce-css')
 
 const build = __dirname + '/build'
 const basedir = __dirname + '/src'
-const b = reduce.create({ basedir })
+const b = reduce.create({
+  basedir,
+  cache: {},
+  packageCache: {},
+})
 
 reduce.src('*.css', { cwd: basedir })
   .pipe(reduce.watch(b, 'bundle.css', { entryGlob: '*.css' }))
@@ -262,6 +266,8 @@ const path = require('path')
 const b = reduce.create({
   entries: ['a.css', 'b.css'],
   basedir: '/path/to/src',
+  cache: {},
+  packageCache: {},
 })
 b.plugin(reduce.bundler, 'bundle.css')
 b.plugin(reduce.watcher, { entryGlob: '*.css' })

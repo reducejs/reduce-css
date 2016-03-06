@@ -37,6 +37,8 @@ gulp.task('watch', ['clean'], function () {
     resolve: {
       paths: [path.join(__dirname, 'src', 'web_modules')],
     },
+    cache: {},
+    packageCache: {},
   })
   let count = 1
   return gulp.src('page/**/index.css', { cwd: basedir })

@@ -5,7 +5,11 @@ const reduce = require('reduce-css')
 
 const build = __dirname + '/build'
 const basedir = __dirname + '/src'
-const b = reduce.create({ basedir })
+const b = reduce.create({
+  basedir,
+  cache: {},
+  packageCache: {},
+})
 
 del(build).then(function () {
   reduce.src('*.css', { cwd: basedir })
