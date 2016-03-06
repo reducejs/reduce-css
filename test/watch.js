@@ -6,7 +6,6 @@ const path = require('path')
 const mkdirp = require('mkdirp')
 const fs = require('fs')
 const os = require('os')
-const depsify = require('depsify')
 
 var tmpdir = path.join(
   (os.tmpdir || os.tmpDir)(), 'reduce-' + Math.random()
@@ -29,7 +28,7 @@ const write = function (file, n) {
   pool[base] = n
   let contents = base + n + '{}'
   if (base !== 'c') {
-    contents = '@deps "./c";' + contents
+    contents = '@external "./c";' + contents
   }
   fs.writeFileSync(file, contents)
 }
@@ -49,23 +48,19 @@ entries.forEach(write)
 
 test('watch', function(t) {
   let count = 3
-  let b = depsify({ basedir: src() })
-
-  b.on('bundle-stream', function (bundleStream) {
-    bundleStream.pipe(reduce.dest(dest()))
-      .once('finish', () => setTimeout(next, 50))
-  })
-
-  b.once('close', function () {
-    t.equal(count, -1)
-    t.end()
-  })
+  let b = reduce.create({ basedir: src() })
 
   reduce.src(['a.css', 'b.css'], { cwd: src() })
     .pipe(reduce.watch(b, {
       common: 'c.css',
       groups: '+(a|b).css',
     }))
+    .on('bundle', function (bundleStream) {
+      bundleStream.pipe(reduce.dest(dest()))
+        .on('data', () => {})
+        .once('finish', () => setTimeout(next, 50))
+    })
+
 
   function next() {
     t.equal(
@@ -84,7 +79,9 @@ test('watch', function(t) {
       [count, 'c', pool.c].join(':')
     )
     if (!count--) {
-      return b.close()
+      b.close()
+      t.equal(count, -1)
+      return t.end()
     }
     let file = [src('c.css')].concat(entries)[count % 3]
     let k = path.basename(file, '.css')

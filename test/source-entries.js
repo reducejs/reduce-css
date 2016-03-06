@@ -7,10 +7,9 @@ const fixtures = path.resolve.bind(path, __dirname, 'fixtures')
 const fs = require('fs')
 const del = require('del')
 const DEST = fixtures('build', 'common.css')
-const depsify = require('depsify')
 
 test('source entries', function(t) {
-  let b = depsify({
+  let b = reduce.create({
     entries: [
       {
         file: '/a',

@@ -1,0 +1,6 @@
+@external "reset";
+@external "./button";
+@import "color";
+.red {
+  color: $red;
+}

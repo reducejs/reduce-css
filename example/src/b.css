@@ -1,7 +1,0 @@
-@deps "./reset";
-@deps "./button";
-@import "color";
-.button {
-  background-color: $green;
-}
-

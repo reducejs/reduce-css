@@ -7,6 +7,7 @@ const url = require('postcss-custom-url')
 const File = require('vinyl')
 const combine = require('stream-combiner2')
 const buffer = require('vinyl-buffer')
+const Depsify = require('depsify')
 
 function bundler(b, opts) {
   if (typeof opts === 'function' || Array.isArray(opts)) {
@@ -45,22 +46,6 @@ function through(write, end) {
   })
 }
 
-function createProcessor(opts) {
-  return postcss(url([
-    [ url.util.inline, opts ],
-    [ url.util.copy, opts ],
-  ]))
-}
-
-function copyWithoutContents(file) {
-  return new File({
-    cwd: file.cwd,
-    base: file.base,
-    path: file.path,
-    contents: null,
-  })
-}
-
 function watcher(b, wopts) {
   b.plugin(require('watchify2'), wopts)
   let close = b.close
@@ -86,7 +71,6 @@ function bundle(b, opts) {
       b.bundle()
         .on('data', data => this.push(data))
         .on('end', next)
-        .on('error', err => b.emit('error', err))
     }
   )
 }
@@ -101,6 +85,7 @@ function watch(b, opts, wopts) {
       next()
     },
     function (next) {
+      b.on('bundle-stream', s => this.emit('bundle', s))
       b.once('close', next)
       b.start()
     }
@@ -116,12 +101,20 @@ function src(pattern, opts) {
 function dest(outFolder, outOpts, urlOpts) {
   let files = []
   let emptyFiles = []
-  let urlProcessor = createProcessor(urlOpts || {})
+  let urlProcessor = postcss(url([
+    [ url.util.inline, urlOpts ],
+    [ url.util.copy, urlOpts ],
+  ]))
   return combine.obj(
     buffer(),
     through(function (file, _, next) {
       files.push(file)
-      let f = copyWithoutContents(file)
+      let f = new File({
+        cwd: file.cwd,
+        base: file.base,
+        path: file.path,
+        contents: null,
+      })
       emptyFiles.push(f)
       next(null, f)
     }),
@@ -142,6 +135,29 @@ function dest(outFolder, outOpts, urlOpts) {
   )
 }
 
+function create(opts) {
+  opts = opts || {}
+  let b = new Depsify(Object.assign({ atRuleName: 'external' }, opts))
+  if (opts.postcss !== false) {
+    b.plugin(require('reduce-css-postcss'), {
+      processorFilter: function (pipeline) {
+        pipeline.get('postcss-simple-import').push({
+          resolve: b._options.resolve,
+        })
+
+        if (typeof opts.postcss === 'function') {
+          return opts.postcss(pipeline)
+        }
+
+        pipeline.push.apply(
+          pipeline, [].concat(opts.postcss).filter(Boolean)
+        )
+      },
+    })
+  }
+  return b
+}
+
 module.exports = {
   bundler,
   watcher,
@@ -149,5 +165,6 @@ module.exports = {
   watch,
   dest,
   src,
+  create,
 }
 

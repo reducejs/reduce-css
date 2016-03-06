@@ -1,4 +1,4 @@
-@external "component/button";
+@external "reset";
 @import "helper/color";
 .blue {
   color: $blue;

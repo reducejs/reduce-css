@@ -1,5 +1,5 @@
-@deps "./reset";
-@deps "./button";
+@external "./reset";
+@external "./button";
 @import "color";
 .button {
   background-color: $green;
