@@ -48,7 +48,7 @@ gulp.task('watch', ['clean'], function () {
       }))
       .on('data', file => console.log('bundle:', file.relative))
       .once('end', function () {
-        console.log('-'.repeat(40), cout++ + '')
+        console.log('-'.repeat(40), count++ + '')
         if (count > 3) {
           b.close()
         }
