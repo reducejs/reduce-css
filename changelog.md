@@ -1,4 +1,12 @@
-<!-- 3ec332b 1457237612000 -->
+<!-- 9691f75 1457493242000 -->
+
+## [v5.2.0](https://github.com/reducejs/reduce-css/commit/9691f75) (2016-03-09)
+
+* [[`2d693f7`](https://github.com/reducejs/reduce-css/commit/2d693f7)] update: common-bundle
+
+* [[`e1a5ac8`](https://github.com/reducejs/reduce-css/commit/e1a5ac8)] readme: add cache for watch examples
+
+* [[`5c1543a`](https://github.com/reducejs/reduce-css/commit/5c1543a)] changelog
 
 ## [v5.1.0](https://github.com/reducejs/reduce-css/commit/3ec332b) (2016-03-06)
 
