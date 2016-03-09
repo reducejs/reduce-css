@@ -108,6 +108,7 @@ function dest(outFolder, outOpts, urlOpts) {
   return combine.obj(
     buffer(),
     through(function (file, _, next) {
+      if (file.isNull()) return next()
       files.push(file)
       let f = new File({
         cwd: file.cwd,
