@@ -1,4 +1,12 @@
-<!-- 9691f75 1457493242000 -->
+<!-- e259a07 1457517699000 -->
+
+## [v5.2.1](https://github.com/reducejs/reduce-css/commit/e259a07) (2016-03-09)
+
+* [[`2304d56`](https://github.com/reducejs/reduce-css/commit/2304d56)] Fix: remove null file before dest
+
+* [[`8a82e11`](https://github.com/reducejs/reduce-css/commit/8a82e11)] Fix: example
+
+* [[`7d9de37`](https://github.com/reducejs/reduce-css/commit/7d9de37)] changelog
 
 ## [v5.2.0](https://github.com/reducejs/reduce-css/commit/9691f75) (2016-03-09)
 
