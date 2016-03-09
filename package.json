@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/reducejs/reduce-css#readme",
   "dependencies": {
-    "common-bundle": "^0.3.0",
+    "common-bundle": "^0.4.0",
     "depsify": "^4.0.0",
     "postcss": "^5.0.5",
     "postcss-custom-url": "^4.0.0",
