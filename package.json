@@ -1,6 +1,6 @@
 {
   "name": "reduce-css",
-  "version": "5.2.1",
+  "version": "6.0.0",
   "description": "Pack CSS into multiple bundles based on postcss",
   "main": "index.js",
   "scripts": {
