@@ -140,7 +140,7 @@ b.bundle().pipe(require('gulp-uglifycss')()).pipe(b.dest('build'))
 ### b.dest(outFolder, urlTransformOptions)
 Works almost the same with [`gulp.dest`],
 except that file contents are transformed using [`postcss-custom-url`]
-before being written to disk.
+before written to disk.
 
 `urlTransformOptions` is passed to both
 the [inline](https://github.com/reducejs/postcss-custom-url#inline)
