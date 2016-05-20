@@ -24,9 +24,6 @@ Check the [example](example/reduce/).
 var reduce = require('reduce-css')
 var del = require('del')
 var path = require('path')
-var Transform = require('stream').Transform
-
-var basedir = path.join(__dirname, 'src')
 
 bundle(createBundler())
 
