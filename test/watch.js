@@ -48,19 +48,20 @@ entries.forEach(write)
 
 test('watch', function(t) {
   let count = 3
-  let b = reduce.create({ basedir: src() })
-
-  reduce.src(['a.css', 'b.css'], { cwd: src() })
-    .pipe(reduce.watch(b, {
+  let b = reduce.create(
+    ['a.css', 'b.css'],
+    { basedir: src() },
+    {
       common: 'c.css',
       groups: '+(a|b).css',
-    }))
-    .on('bundle', function (bundleStream) {
-      bundleStream.pipe(reduce.dest(dest()))
-        .on('data', () => {})
-        .once('finish', () => setTimeout(next, 50))
-    })
-
+    },
+    true
+  )
+  b.on('update', function update() {
+    b.bundle().pipe(b.dest(dest()))
+      .once('end', () => setTimeout(next, 50))
+    return update
+  }())
 
   function next() {
     t.equal(

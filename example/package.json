@@ -1,0 +1,7 @@
+{
+  "name": "example",
+  "dependencies": {
+    "gulp": "^3.9.0",
+    "gulp-util": "^3.0.7"
+  }
+}

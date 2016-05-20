@@ -1,171 +1,132 @@
 'use strict'
 
-const stream = require('stream')
-const vfs = require('vinyl-fs')
-const postcss = require('postcss')
-const url = require('postcss-custom-url')
-const File = require('vinyl')
-const combine = require('stream-combiner2')
-const buffer = require('vinyl-buffer')
-const Depsify = require('depsify')
+var Stream = require('stream')
+var vfs = require('vinyl-fs')
+var PostCSS = require('postcss')
+var url = require('postcss-custom-url')
+var combine = require('stream-combiner2')
+var buffer = require('vinyl-buffer')
+var Depsify = require('depsify')
+var path = require('path')
+var glob = require('globby')
+var sink = require('./lib/sink')
+
+function through(write, end) {
+  return Stream.Transform({
+    objectMode: true,
+    transform: write || function (o, enc, next) { next(null, o) },
+    flush: end,
+  })
+}
 
 function bundler(b, opts) {
-  if (typeof opts === 'function' || Array.isArray(opts)) {
-    return b.plugin(opts)
-  }
-
-  opts = opts || {}
-  if (typeof opts === 'string') {
-    opts = { groups: { output: opts } }
-  }
-
-  let urlProcessor = postcss(url)
-  opts.pack = function (options) {
-    let pipeline = b.pack()
-    pipeline.pop()
-    pipeline.push(
+  var urlProcessor = PostCSS(url)
+  b.on('common.pipeline', function (bundleFile, pipeline) {
+    var pack = b.pack()
+    pack.pop()
+    pack.push(
       through(function (row, _, next) {
         urlProcessor.process(row.source, {
           from: row.file,
-          to: options.to,
+          to: bundleFile,
         }).then(function (result) {
           next(null, result.css)
         })
       })
     )
-    return pipeline
-  }
+    var packPipeline = pipeline.get('pack')
+    packPipeline.splice.apply(packPipeline, [0, 1].concat(pack))
+  })
   b.plugin(require('common-bundle'), opts)
-}
-
-function through(write, end) {
-  return stream.Transform({
-    objectMode: true,
-    transform: write,
-    flush: end,
+  b.on('reset', function reset() {
+    b.pipeline.push(buffer())
+    return reset
+  }())
+  b.on('bundle', output => {
+    output.on('error', err => delete err.stream)
   })
 }
 
-function watcher(b, wopts) {
-  b.plugin(require('watchify2'), wopts)
-  let close = b.close
+function watchify(b, opts) {
+  b.plugin(require('watchify2'), opts)
+  var close = b.close
   b.close = function () {
     close()
     b.emit('close')
   }
-  b.start = function () {
-    b.emit('bundle-stream', b.bundle())
-  }
-  b.on('update', b.start)
 }
 
-function bundle(b, opts) {
-  b.plugin(bundler, opts)
-
-  return through(
-    function (file, enc, next) {
-      b.add(file.path)
-      next()
-    },
-    function (next) {
-      b.bundle()
-        .on('data', data => this.push(data))
-        .on('end', next)
-    }
-  )
-}
-
-function watch(b, opts, wopts) {
-  b.plugin(bundler, opts)
-  b.plugin(watcher, wopts)
-
-  return through(
-    function (file, enc, next) {
-      b.add(file.path)
-      next()
-    },
-    function (next) {
-      b.on('bundle-stream', s => this.emit('bundle', s))
-      b.once('close', next)
-      b.start()
-    }
-  )
-}
-
-function src(pattern, opts) {
-  opts = opts || {}
-  opts.read = false
-  return vfs.src(pattern, opts)
-}
-
-function dest(outFolder, outOpts, urlOpts) {
-  let files = []
-  let emptyFiles = []
-  let urlProcessor = postcss(url([
+function urlify(outFolder, urlOpts) {
+  var urlProcessor = PostCSS(url([
     [ url.util.inline, urlOpts ],
     [ url.util.copy, urlOpts ],
   ]))
-  return combine.obj(
-    buffer(),
-    through(function (file, _, next) {
-      if (file.isNull()) return next()
-      files.push(file)
-      let f = new File({
-        cwd: file.cwd,
-        base: file.base,
-        path: file.path,
-        contents: null,
-      })
-      emptyFiles.push(f)
-      next(null, f)
-    }),
-    vfs.dest(outFolder, outOpts),
-    through(function (file, _, next) {
-      let i = emptyFiles.indexOf(file)
-      let writePath = file.path
-      file = files[i]
-      urlProcessor.process(
-        file.contents.toString('utf8'),
-        { from: file.path, to: writePath }
-      ).then(function (result) {
-        file.contents = Buffer(result.css)
-        next(null, file)
-      }, err => this.emit('error', err))
-    }),
-    vfs.dest(outFolder, outOpts)
-  )
+
+  return through(function (file, _, next) {
+    urlProcessor.process(file.contents.toString('utf8'), {
+      from: file.path,
+      to: path.resolve(outFolder, file.relative),
+    }).then(function (result) {
+      file.contents = Buffer(result.css)
+      next(null, file)
+    }, err => this.emit('error', err))
+  })
 }
 
-function create(opts) {
+function postcss(b, opts) {
+  b.plugin(require('reduce-css-postcss'), {
+    processorFilter: function (pipeline) {
+      pipeline.get('postcss-simple-import').push({
+        resolve: b._options.resolve,
+      })
+
+      if (typeof opts === 'function') {
+        return opts(pipeline)
+      }
+
+      pipeline.push.apply(
+        pipeline, [].concat(opts).filter(Boolean)
+      )
+    },
+  })
+}
+
+function create(entries, opts, bundleOptions, watchOpts) {
+  if (typeof entries !== 'string' && !Array.isArray(entries)) {
+    bundleOptions = opts
+    opts = entries
+    entries = null
+  }
   opts = opts || {}
-  let b = new Depsify(Object.assign({ atRuleName: 'external' }, opts))
+  var b = new Depsify(Object.assign({ atRuleName: 'external' }, opts))
   if (opts.postcss !== false) {
-    b.plugin(require('reduce-css-postcss'), {
-      processorFilter: function (pipeline) {
-        pipeline.get('postcss-simple-import').push({
-          resolve: b._options.resolve,
-        })
-
-        if (typeof opts.postcss === 'function') {
-          return opts.postcss(pipeline)
-        }
-
-        pipeline.push.apply(
-          pipeline, [].concat(opts.postcss).filter(Boolean)
-        )
-      },
-    })
+    b.plugin(postcss, opts.postcss)
+  }
+  if (entries) {
+    glob.sync(entries, { cwd: b._options.basedir })
+      .forEach(function (file) {
+        b.add(file)
+      })
+  }
+  b.plugin(bundler, bundleOptions)
+  if (watchOpts) {
+    b.plugin(watchify, typeof watchOpts === 'object' ? watchOpts : {})
+  }
+  b.dest = function (outFolder, urlOpts) {
+    var output = combine.obj(
+      urlify(outFolder, urlOpts),
+      vfs.dest(outFolder)
+    )
+    process.nextTick(sink(output))
+    return output
   }
   return b
 }
 
 module.exports = {
   bundler,
-  watcher,
-  bundle,
-  watch,
-  dest,
-  src,
+  watchify,
+  urlify,
   create,
 }
 
