@@ -1,4 +1,16 @@
-<!-- e259a07 1457517699000 -->
+<!-- 955abf8 1463734226000 -->
+
+## [v6.0.0](https://github.com/reducejs/reduce-css/commit/955abf8) (2016-05-20)
+
+* [[`319e1ec`](https://github.com/reducejs/reduce-css/commit/319e1ec)] readme: typo
+
+* [[`72ea813`](https://github.com/reducejs/reduce-css/commit/72ea813)] readme: remove unused lines
+
+* [[`3a0dbbd`](https://github.com/reducejs/reduce-css/commit/3a0dbbd)] travis: add 5
+
+* [[`dd46058`](https://github.com/reducejs/reduce-css/commit/dd46058)] refactor
+
+* [[`325b88a`](https://github.com/reducejs/reduce-css/commit/325b88a)] changelog
 
 ## [v5.2.1](https://github.com/reducejs/reduce-css/commit/e259a07) (2016-03-09)
 
