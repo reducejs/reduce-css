@@ -1,6 +1,0 @@
-@external "reset";
-@import "helper/color";
-.blue {
-  color: $blue;
-}
-

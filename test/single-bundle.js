@@ -7,24 +7,25 @@ const del = require('del')
 const compare = require('compare-directory')
 
 const fixtures = path.resolve.bind(path, __dirname, 'fixtures')
-const dest = fixtures.bind(null, 'build', 'single-bundle')
-const expect = fixtures.bind(null, 'expected', 'single-bundle')
+const build = fixtures('build', 'single-bundle')
+const expect = fixtures('expected', 'single-bundle')
 
 test('single bundle', function(t) {
-  let basedir = fixtures('src')
-  let b = reduce.create({ basedir })
-  del(dest()).then(function () {
-    reduce.src('*.css', { cwd: basedir })
-      .pipe(reduce.bundle(b, 'common.css'))
-      .pipe(reduce.dest(dest(), null, {
-        maxSize: 0,
-        assetOutFolder: fixtures('build', 'single-bundle', 'images'),
-      }))
-      .on('data', () => {})
-      .on('end', function () {
-        compare(t, ['**/*.css', '**/*.png'], dest(), expect())
-        t.end()
-      })
+  del(build).then(function () {
+    var basedir = fixtures('src')
+    var b = reduce.create(
+      '*.css',
+      { basedir },
+      'common.css'
+    )
+    b.bundle().pipe(b.dest(build, {
+      maxSize: 0,
+      assetOutFolder: fixtures('build', 'single-bundle', 'images'),
+    }))
+    .on('end', function () {
+      compare(t, ['**/*.css', '**/*.png'], build, expect)
+      t.end()
+    })
   })
 })
 
