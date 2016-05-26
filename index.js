@@ -93,6 +93,7 @@ function postcss(b, opts) {
 
 function create(entries, opts, bundleOptions, watchOpts) {
   if (typeof entries !== 'string' && !Array.isArray(entries)) {
+    watchOpts = bundleOptions
     bundleOptions = opts
     opts = entries
     entries = null
