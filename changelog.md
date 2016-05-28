@@ -1,4 +1,14 @@
-<!-- 955abf8 1463734226000 -->
+<!-- 04b9a05 1464397659000 -->
+
+## [v6.1.0](https://github.com/reducejs/reduce-css/commit/04b9a05) (2016-05-28)
+
+* [[`d1daa4c`](https://github.com/reducejs/reduce-css/commit/d1daa4c)] update depsify
+
+## [v6.0.1](https://github.com/reducejs/reduce-css/commit/4a4f773) (2016-05-26)
+
+* [[`0798ee3`](https://github.com/reducejs/reduce-css/commit/0798ee3)] Fix: default arguments
+
+* [[`028721d`](https://github.com/reducejs/reduce-css/commit/028721d)] changelog
 
 ## [v6.0.0](https://github.com/reducejs/reduce-css/commit/955abf8) (2016-05-20)
 
