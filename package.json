@@ -29,6 +29,9 @@
     "url": "https://github.com/reducejs/reduce-css/issues"
   },
   "homepage": "https://github.com/reducejs/reduce-css#readme",
+  "optionalDependencies": {
+    "watchify2": "^0.1.0"
+  },
   "dependencies": {
     "common-bundle": "^0.5.0",
     "depsify": "^5.0.0",
@@ -38,8 +41,7 @@
     "reduce-css-postcss": "^3.0.0",
     "stream-combiner2": "^1.1.1",
     "vinyl-buffer": "^1.0.0",
-    "vinyl-fs": "^2.2.1",
-    "watchify2": "^0.1.0"
+    "vinyl-fs": "^2.2.1"
   },
   "devDependencies": {
     "compare-directory": "^1.0.1",
