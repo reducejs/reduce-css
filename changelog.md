@@ -1,4 +1,10 @@
-<!-- 04b9a05 1464397659000 -->
+<!-- 6d77a2d 1465722231000 -->
+
+## [v6.2.0](https://github.com/reducejs/reduce-css/commit/6d77a2d) (2016-06-12)
+
+* [[`1feaed6`](https://github.com/reducejs/reduce-css/commit/1feaed6)] move watchify to optionalDependencies
+
+* [[`cf270be`](https://github.com/reducejs/reduce-css/commit/cf270be)] changelog
 
 ## [v6.1.0](https://github.com/reducejs/reduce-css/commit/04b9a05) (2016-05-28)
 
